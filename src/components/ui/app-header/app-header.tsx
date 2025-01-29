@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import styles from './app-header.module.css';
 import { TAppHeaderUIProps } from './type';
+import { Link, Outlet } from 'react-router-dom';
 import {
   BurgerIcon,
   ListIcon,
@@ -31,5 +32,6 @@ export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => (
         </p>
       </div>
     </nav>
+    <Outlet />
   </header>
 );
