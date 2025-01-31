@@ -2,7 +2,6 @@ import { ConstructorPage, Feed, ForgotPassword, Login, NotFound404, Profile, Pro
 import '../../index.css';
 import styles from './app.module.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-
 import { AppHeader, IngredientDetails, Modal, OrderInfo } from '@components';
 
 const App = () => (
@@ -36,11 +35,11 @@ const App = () => (
                 <Route path="*" element={<NotFound404 />}/> */}
             </Routes>
 
-            {/* <Routes>
-                <Route path="/img/:id" element={<Modal><OrderInfo /></Modal>} />
-                <Route path="/ingredients/:id" element={<Modal><IngredientDetails /></Modal>} />
-                <Route path="/profile/orders/:number" element={<Modal><OrderInfo /></Modal>} />
-            </Routes> */}
+            <Routes>
+                <Route path="/feed/:id" element={<Modal title='' onClose={() => {}}><OrderInfo /></Modal>} />
+                <Route path="/ingredients/:id" element={<Modal title='' onClose={() => {}}><IngredientDetails /></Modal>} />
+                <Route path="/profile/orders/:id" element={<Modal title='' onClose={() => {}}><OrderInfo /></Modal>} />
+            </Routes>
         </BrowserRouter>
     </div>
 );
