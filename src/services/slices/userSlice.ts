@@ -1,30 +1,62 @@
-import {createSlice} from '@reduxjs/toolkit'
+// import { getOrdersApi } from '@api';
+// import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+// import { TOrder } from '@utils-types';
 
-interface TrackListState {
-    tracks: TrackModel[]
-}
+// export const fetchOrders = createAsyncThunk(
+//     'user/getOrders',
+//     async () => {
+//         const ingredients = await getOrdersApi();
+//         return ingredients;
+//     }
+// );
 
-const initialState: TrackListState = {
-    tracks
-}
+// interface IOrdersListState {
+//     orders: TOrder[];
+//     total: number | null;
+//     totalToday: number | null;
+//     isLoading: boolean;
+//     isContain: boolean;
+// }
 
-const userSlice = createSlice({
-    name: 'user',
-    initialState,
-    reducers: {
-        toggleLike: (state, action: PayLoadAction<TrackModel>) => {
-            const currentArr: TrackModel[] = state.tracks.filter(track => track.id === action.payload.id)
-            const [currentTrack] = currentArr
-            currentTrack.isLiked = (!currentTrack.isLiked)
-        }
-    },
-    selectors: {
-        selectTracks: (sliceState) => {
-            return sliceState.tracks
-        }
-    }
-})
+// const initialState: IOrdersListState = {
+//     orders: [],
+//     total: null,
+//     totalToday: null,
+//     isLoading: false,
+//     isContain: false
+// };
 
-export const { selectTracks } = userSlice.selectors
-export const { toggleLike } = userSlice.actions;
-export default userSlice.reducer;
+// const userSlice = createSlice({
+//     name: 'orders',
+//     initialState,
+//     reducers: {},
+//     extraReducers: (builder) => {
+//         builder
+//         .addCase(fetchOrders.pending, (state) => {
+//             state.isLoading = true;
+//         })
+//         .addCase(fetchOrders.fulfilled, (state, action) => {
+//             state.isLoading = false;
+//             state.orders = action.payload.orders;
+//             state.total = action.payload.total;
+//             state.totalToday = action.payload.totalToday;
+//             state.isContain = true;
+//         })
+//         .addCase(fetchOrders.rejected, (state, action) => {
+//             state.isLoading = false;
+//             console.log('ошибка');
+//             console.log(action)
+//             state.isContain = false;
+//         })
+//     },
+//     selectors: {
+//         getOrders: (state) => state.orders,
+//         getTotal: (state) => state.total,
+//         getTotalToday: (state) => state.totalToday,
+//         getContainStatus: (state) => state.isContain,
+//         getLoadingStatus: (state) => state.isLoading
+//     }
+// });
+
+// export const { getOrders, getTotal, getTotalToday, getContainStatus, getLoadingStatus } = userSlice.selectors;
+// export { userSlice };

@@ -1,8 +1,9 @@
 import { ProfileUI } from '@ui-pages';
 import { FC, SyntheticEvent, useEffect, useState } from 'react';
+import { Outlet } from 'react-router-dom';
 
 export const Profile: FC = () => {
-  /** TODO: взять переменную из стора */
+//   TODO: взять переменную из стора
   const user = {
     name: '',
     email: ''
@@ -47,15 +48,15 @@ export const Profile: FC = () => {
     }));
   };
 
-  return (
-    <ProfileUI
-      formValue={formValue}
-      isFormChanged={isFormChanged}
-      handleCancel={handleCancel}
-      handleSubmit={handleSubmit}
-      handleInputChange={handleInputChange}
-    />
-  );
+    return (
+        <ProfileUI
+        formValue={formValue}
+        isFormChanged={isFormChanged}
+        handleCancel={handleCancel}
+        handleSubmit={handleSubmit}
+        handleInputChange={handleInputChange}
+        />
+    );
 
   return null;
 };
