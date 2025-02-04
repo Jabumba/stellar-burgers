@@ -11,53 +11,87 @@ import {
 } from '@pages';
 import '../../index.css';
 import styles from './app.module.css';
-import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate, useParams, useLocation } from 'react-router-dom';
 import { AppHeader, IngredientDetails, Modal, OrderInfo } from '@components';
+import { useDispatch, useSelector } from '../../services/store';
+import { useEffect } from 'react';
+import { fetchOrders, getCurrentOrder, getCurrentOrderId } from '../../services/slices/ordersSlice';
+import { TOrder } from '@utils-types';
+import { fetchIngredients, getIngredients } from '../../services/slices/ingredientsSlice';
 
-const App = () => (
-    <div className={styles.app}>
-        <BrowserRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true, }}>
-        <Routes>
-            <Route path='/' element={<AppHeader />}> //
-                <Route index element={<ConstructorPage />} /> //
-                <Route path='feed' element={<Feed />} /> //
-                <Route path='login' element={<Login />} />
-                <Route path='register' element={<Register />} />
-                <Route path='forgot-password' element={<ForgotPassword />} />
-                <Route path='reset-password' element={<ResetPassword />} />
-                <Route path='profile'>
-                    <Route index element={<Profile />} />
-                    <Route path='orders' element={<ProfileOrders />} />
+const App = () => {
+    const location = useLocation();
+    const dispatch = useDispatch()
+    const backgroundLocation = location.state?.background;
+    useEffect(() => {
+        dispatch(fetchIngredients());
+        dispatch(fetchOrders());
+    }, [])
+    let currentOrderId: number = useSelector(getCurrentOrderId);
+    return (
+        <div className={styles.app}>
+            <Routes 
+            location={backgroundLocation || location}
+            >
+                <Route path='/' element={<AppHeader />}> //
+                    <Route index element={<ConstructorPage />} /> //
+                    <Route path='feed' element={<Feed />} /> //
+                    <Route path='login' element={<Login />} />
+                    <Route path='register' element={<Register />} />
+                    <Route path='forgot-password' element={<ForgotPassword />} />
+                    <Route path='reset-password' element={<ResetPassword />} />
+                    <Route path='profile'>
+                        <Route index element={<Profile />} />
+                        <Route path='orders' element={<ProfileOrders />} />
+                    </Route>
+
+                    <Route 
+                    path='ingredients/:id' 
+                    element={
+                            <IngredientDetails />
+                    }/>
+                    <Route 
+                    path='feed/:id' 
+                    element={
+                        <OrderInfo />
+                    }/>
+                    <Route 
+                    path='profile/orders/:id' 
+                    element={
+                        <OrderInfo />
+                    }/>
+
+                    <Route path='*' element={<NotFound404 />} /> //
                 </Route>
-                <Route path='*' element={<NotFound404 />} /> //
-            </Route>
-        </Routes>
+            </Routes>
 
-        <Routes>
-            <Route
-            path='/feed/:id'
-            element={
-                <Modal title='Заказ' onClose={() => {window.history.back()}}>
-                    <OrderInfo />
-                </Modal>
-            }/>
-            <Route
-            path='/ingredients/:id'
-            element={
-                <Modal title='Детали ингредиента' onClose={() => {window.history.back()}}>
-                    <IngredientDetails />
-                </Modal>
-            }/>
-            <Route
-            path='/profile/orders/:id'
-            element={
-                <Modal title='Заказ' onClose={() => {window.history.back()}}>
-                    <OrderInfo />
-                </Modal>
-            }/>
-        </Routes>
-    </BrowserRouter>
-  </div>
-);
+            {
+            backgroundLocation 
+            && 
+            (<Routes >
+                <Route
+                path='/feed/:id'
+                element={
+                    <Modal title={`#${currentOrderId}`} onClose={() => {window.history.back()}}>
+                        <OrderInfo />
+                    </Modal>
+                }/>
+                <Route
+                path='/ingredients/:id'
+                element={
+                    <Modal title='Детали ингредиента' onClose={() => {window.history.back()}}>
+                        <IngredientDetails />
+                    </Modal>
+                }/>
+                <Route
+                path='/profile/orders/:id'
+                element={
+                    <Modal title={`#${currentOrderId}`} onClose={() => {window.history.back()}}>
+                        <OrderInfo />
+                    </Modal>
+                }/>
+            </Routes>)}
+        </div>)
+};
 
 export default App;

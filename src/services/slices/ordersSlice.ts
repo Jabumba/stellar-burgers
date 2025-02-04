@@ -1,6 +1,6 @@
 import { getFeedsApi, orderBurgerApi, getOrderByNumberApi } from '@api';
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { TOrder } from '@utils-types';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { TIngredient, TOrder } from '@utils-types';
 
 export const fetchOrders = createAsyncThunk(
     'orders/getAll',
@@ -29,9 +29,13 @@ export const fetchOrderById = createAsyncThunk(
 
 interface IOrdersListState {
     orders: TOrder[];
-    order: TOrder | null;
+    buildingOrder: TIngredient[];
+    yourOrder: {
+        order: TOrder | null,
+        name: string | null
+    },
     currentOrder: TOrder[] | null;
-    name: string | null;
+    currentOrderId: number;
     total: number | null;
     totalToday: number | null;
     isLoading: boolean;
@@ -40,9 +44,13 @@ interface IOrdersListState {
 
 const initialState: IOrdersListState = {
     orders: [],
-    order: null,
+    buildingOrder: [],
+    yourOrder: {
+        order: null,
+        name: null,
+    },
     currentOrder: null,
-    name: null,
+    currentOrderId: 0,
     total: null,
     totalToday: null,
     isLoading: false,
@@ -52,7 +60,11 @@ const initialState: IOrdersListState = {
 const ordersSlice = createSlice({
     name: 'orders',
     initialState,
-    reducers: {},
+    reducers: {
+        setCurrentOrderId: (state, action: PayloadAction<number>) => {
+            state.currentOrderId = action.payload
+        }
+    },
     extraReducers: (builder) => {
         builder
         .addCase(fetchOrders.pending, (state) => {
@@ -76,8 +88,9 @@ const ordersSlice = createSlice({
         })
         .addCase(fetchPostOrder.fulfilled, (state, action) => {
             state.isLoading = false;
-            state.order = action.payload.order;
-            state.name = action.payload.name
+            // state.yourOrder.order = action.payload.order;
+            // state.yourOrder.name = action.payload.name
+            state.yourOrder = action.payload
             state.isContain = true;
         })
         .addCase(fetchPostOrder.rejected, (state, action) => {
@@ -101,16 +114,17 @@ const ordersSlice = createSlice({
         })
     },
     selectors: {
-        getOrders: (state) => state.orders,
+        getAllOrders: (state) => state.orders,
+        getYourOrder: (state) => state.yourOrder,
         getTotal: (state) => state.total,
         getTotalToday: (state) => state.totalToday,
-        getOrder: (state) => state.order,
         getCurrentOrder: (state) => state.currentOrder,
-        getName: (state) => state.name,
+        getCurrentOrderId: (state) => state.currentOrderId,
         getContainStatus: (state) => state.isContain,
         getLoadingStatus: (state) => state.isLoading
     }
 });
 
-export const { getOrders, getTotal, getCurrentOrder, getTotalToday, getOrder, getName, getContainStatus, getLoadingStatus } = ordersSlice.selectors;
+export const { setCurrentOrderId } = ordersSlice.actions
+export const { getAllOrders, getYourOrder, getTotal, getTotalToday, getCurrentOrder, getCurrentOrderId, getContainStatus, getLoadingStatus } = ordersSlice.selectors;
 export { ordersSlice };

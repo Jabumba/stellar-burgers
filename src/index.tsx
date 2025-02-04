@@ -11,9 +11,9 @@ const root = ReactDOMClient.createRoot(container!);
 root.render(
   <Provider store={store}>
     <React.StrictMode>
-      {/* <BrowserRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true, }}> */}
+      <BrowserRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true, }}>
         <App />
-      {/* </BrowserRouter> */}
+      </BrowserRouter>
     </React.StrictMode>
   </Provider>
 );

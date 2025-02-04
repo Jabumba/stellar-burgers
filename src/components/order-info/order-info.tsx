@@ -3,16 +3,18 @@ import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
 import { TIngredient, TOrder } from '@utils-types';
 import { useDispatch, useSelector } from '../../services/store';
-import { getIngredients } from '../../services/slices/ingredientsSlice';
+import { fetchIngredients, getIngredients } from '../../services/slices/ingredientsSlice';
 import { useParams } from 'react-router-dom';
-import { fetchOrderById, getCurrentOrder } from '../../services/slices/ordersSlice';
+import { fetchOrderById, getCurrentOrder, setCurrentOrderId } from '../../services/slices/ordersSlice';
 
 export const OrderInfo: FC = () => {
     const dispatch = useDispatch()
     const { id } = useParams();
     useEffect(() => {
+        // dispatch(fetchIngredients());
         dispatch(fetchOrderById(Number(id)));
-        console.log('feed-modal')
+        dispatch(setCurrentOrderId(Number(id)))
+        // console.log('feed-modal')
     }, []);
     /** TODO: взять переменные orderData и ingredients из стора */
     const orderData: TOrder | undefined = useSelector(getCurrentOrder)?.[0];
@@ -63,6 +65,6 @@ export const OrderInfo: FC = () => {
   if (!orderInfo) {
     return <Preloader />;
   }
-
+  
   return <OrderInfoUI orderInfo={orderInfo} />;
 };
