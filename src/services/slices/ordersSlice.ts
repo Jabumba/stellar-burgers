@@ -1,6 +1,6 @@
 import { getFeedsApi, orderBurgerApi, getOrderByNumberApi } from '@api';
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { TIngredient, TOrder } from '@utils-types';
+import { createSlice, createAsyncThunk, PayloadAction, nanoid } from '@reduxjs/toolkit';
+import { TConstructorIngredient, TIngredient, TOrder } from '@utils-types';
 
 export const fetchOrders = createAsyncThunk(
     'orders/getAll',
@@ -29,11 +29,15 @@ export const fetchOrderById = createAsyncThunk(
 
 interface IOrdersListState {
     orders: TOrder[];
-    buildingOrder: TIngredient[];
+    buildingOrder: {
+        bun: TIngredient |  null,
+        ingredients: TConstructorIngredient[]
+    },
+    // buildingOrder: TConstructorIngredient | null,
     yourOrder: {
         order: TOrder | null,
         name: string | null
-    },
+    }
     currentOrder: TOrder[] | null;
     currentOrderId: number;
     total: number | null;
@@ -44,7 +48,11 @@ interface IOrdersListState {
 
 const initialState: IOrdersListState = {
     orders: [],
-    buildingOrder: [],
+    buildingOrder: {
+        bun: null,
+        ingredients: []
+    },
+    // buildingOrder: null,
     yourOrder: {
         order: null,
         name: null,
@@ -63,6 +71,44 @@ const ordersSlice = createSlice({
     reducers: {
         setCurrentOrderId: (state, action: PayloadAction<number>) => {
             state.currentOrderId = action.payload
+        },
+        // setBunId: (state, action: PayloadAction<string>) => {
+        //     state.buildingOrder.bun._id = action.payload
+        // },
+        // addIngredient: (state, action: PayloadAction<TIngredient>) => {
+        //     state.buildingOrder.ingredients.push(action.payload)
+        // }
+        // addIngredient: (state, action: PayloadAction<TIngredient>) => {
+        //     action.payload.type === 'bun' 
+        //     ? state.buildingOrder.bun = action.payload 
+        //     : state.buildingOrder.ingredients.push(action.payload as TConstructorIngredient)
+        // },
+        addIngredient: {
+            reducer: (state, action: PayloadAction<TConstructorIngredient>) => {
+                action.payload.type === 'bun' 
+                ? state.buildingOrder.bun = action.payload 
+                : state.buildingOrder.ingredients.push(action.payload)
+            },
+            prepare: (ingredient: TIngredient) => {
+                const id = nanoid();
+                return { payload: {...ingredient, id } };
+            }
+        },
+        deleteIngredient: (state, action: PayloadAction<string>) => {
+            const ingredients = state.buildingOrder.ingredients;
+            const changeIngredients = ingredients.filter((ingredient) => {
+                return ingredient.id !== action.payload
+            })
+            state.buildingOrder.ingredients = changeIngredients;
+        },
+        changeIngredients: (state, action: PayloadAction<{changedIndex: number, needIndex: number}>) => {
+            const repositionIngredients = state.buildingOrder.ingredients;
+            
+            const disabledIngredient = repositionIngredients[action.payload.needIndex];
+            repositionIngredients[action.payload.needIndex] = repositionIngredients[action.payload.changedIndex];
+            repositionIngredients[action.payload.changedIndex] = disabledIngredient;
+
+            state.buildingOrder.ingredients = repositionIngredients;
         }
     },
     extraReducers: (builder) => {
@@ -115,6 +161,7 @@ const ordersSlice = createSlice({
     },
     selectors: {
         getAllOrders: (state) => state.orders,
+        getBuildingOrder: (state) => state.buildingOrder,
         getYourOrder: (state) => state.yourOrder,
         getTotal: (state) => state.total,
         getTotalToday: (state) => state.totalToday,
@@ -125,6 +172,6 @@ const ordersSlice = createSlice({
     }
 });
 
-export const { setCurrentOrderId } = ordersSlice.actions
-export const { getAllOrders, getYourOrder, getTotal, getTotalToday, getCurrentOrder, getCurrentOrderId, getContainStatus, getLoadingStatus } = ordersSlice.selectors;
+export const { setCurrentOrderId, addIngredient, deleteIngredient, changeIngredients } = ordersSlice.actions
+export const { getAllOrders, getBuildingOrder, getYourOrder, getTotal, getTotalToday, getCurrentOrder, getCurrentOrderId, getContainStatus, getLoadingStatus } = ordersSlice.selectors;
 export { ordersSlice };

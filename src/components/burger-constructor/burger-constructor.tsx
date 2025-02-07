@@ -1,16 +1,26 @@
-import { FC, useMemo } from 'react';
-import { TConstructorIngredient } from '@utils-types';
+import { FC, useEffect, useMemo } from 'react';
+import { TConstructorIngredient, TIngredient } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
 import { getIngredients } from '../../services/slices/ingredientsSlice'
-import { useSelector } from '../../services/store'
+import { useDispatch, useSelector } from '../../services/store'
+import { fetchOrders, getBuildingOrder } from '../../services/slices/ordersSlice';
 
 export const BurgerConstructor: FC = () => {
   /** TODO: взять переменные constructorItems, orderRequest и orderModalData из стора */
+  const dispatch = useDispatch()
+  useEffect(() => {
+    dispatch(fetchOrders());
+  }, [])
+  const orderData = useSelector(getBuildingOrder);
+  const ingredients = orderData.ingredients
+//   .map((ingredient) => Object.assign({id: ingredient._id}, ingredient))
   const constructorItems = {
     bun: {
-      price: 0
+        name: orderData.bun?.name ?? '',
+        price: orderData.bun?.price ?? 0,
+        image: orderData.bun?.image ?? ''
     },
-    ingredients: []
+    ingredients: ingredients
   };
 
   const orderRequest = false;

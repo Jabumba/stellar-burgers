@@ -1,62 +1,70 @@
-// import { getOrdersApi } from '@api';
-// import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-// import { TOrder } from '@utils-types';
+import { loginUserApi, TLoginData } from '@api';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { TUser } from '@utils-types';
 
-// export const fetchOrders = createAsyncThunk(
-//     'user/getOrders',
-//     async () => {
-//         const ingredients = await getOrdersApi();
-//         return ingredients;
-//     }
-// );
+export const loginUser = createAsyncThunk(
+    'user/loginUser',
+    async ({ email, password }: TLoginData) => {
+        const data = await loginUserApi({ email, password });
+        return data;
+    }
+);
 
-// interface IOrdersListState {
-//     orders: TOrder[];
-//     total: number | null;
-//     totalToday: number | null;
-//     isLoading: boolean;
-//     isContain: boolean;
-// }
+interface IUserListState {
+    isAuthChecked: boolean, // флаг для статуса проверки токена пользователя
+    isAuthenticated: boolean,
+    user: TUser,
+    password: string | null,
+    loginUserError: unknown,
+    loginUserRequest: boolean,
+    isLoading: boolean
+}
 
-// const initialState: IOrdersListState = {
-//     orders: [],
-//     total: null,
-//     totalToday: null,
-//     isLoading: false,
-//     isContain: false
-// };
+const initialState: IUserListState = {
+    isAuthChecked: false, // флаг для статуса проверки токена пользователя
+    isAuthenticated: false,
+    user: {
+        email: '',
+        name: ''
+    },
+    password: null,
+    loginUserError: null,
+    loginUserRequest: false,
+    isLoading: false
+};
 
-// const userSlice = createSlice({
-//     name: 'orders',
-//     initialState,
-//     reducers: {},
-//     extraReducers: (builder) => {
-//         builder
-//         .addCase(fetchOrders.pending, (state) => {
-//             state.isLoading = true;
-//         })
-//         .addCase(fetchOrders.fulfilled, (state, action) => {
-//             state.isLoading = false;
-//             state.orders = action.payload.orders;
-//             state.total = action.payload.total;
-//             state.totalToday = action.payload.totalToday;
-//             state.isContain = true;
-//         })
-//         .addCase(fetchOrders.rejected, (state, action) => {
-//             state.isLoading = false;
-//             console.log('ошибка');
-//             console.log(action)
-//             state.isContain = false;
-//         })
-//     },
-//     selectors: {
-//         getOrders: (state) => state.orders,
-//         getTotal: (state) => state.total,
-//         getTotalToday: (state) => state.totalToday,
-//         getContainStatus: (state) => state.isContain,
-//         getLoadingStatus: (state) => state.isLoading
-//     }
-// });
+const userSlice = createSlice({
+    name: 'user',
+    initialState,
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+        .addCase(loginUser.pending, (state) => {
+            state.loginUserRequest = true;
+            state.loginUserError = null;
+            state.isLoading = true;
+        })
+        .addCase(loginUser.rejected, (state, action) => {
+            state.loginUserRequest = false;
+            state.loginUserError = action.payload;
+            state.isAuthChecked = true;
+            state.isLoading = false;
+        })
+        .addCase(loginUser.fulfilled, (state, action) => {
+            state.user = action.payload.user;
+            state.loginUserRequest = false;
+            state.isAuthenticated = true;
+            state.isAuthChecked = true;
+            state.isLoading = false;
+        })
+    },
+    selectors: {
+        getAuthenticationStatus: (state) => state.isAuthenticated,
+        getUser: (state) => state.user,
+        getPassword: (state) => state.password,
+        getLoadingStatus: (state) => state.isLoading
+    }
+});
 
-// export const { getOrders, getTotal, getTotalToday, getContainStatus, getLoadingStatus } = userSlice.selectors;
-// export { userSlice };
+export const { getAuthenticationStatus, getUser, getPassword, getLoadingStatus } = userSlice.selectors;
+export { userSlice };

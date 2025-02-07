@@ -1,9 +1,9 @@
 import { Preloader } from '@ui';
 import { FeedUI } from '@ui-pages';
 import { TOrder } from '@utils-types';
-import { FC, useEffect } from 'react';
-import { useSelector, useDispatch } from '../../services/store';
-import { fetchOrders, getAllOrders } from '../../services/slices/ordersSlice';
+import { FC } from 'react';
+import { useSelector } from '../../services/store';
+import { getAllOrders } from '../../services/slices/ordersSlice';
 
 export const Feed: FC = () => {
     // const dispatch = useDispatch();
@@ -18,5 +18,5 @@ export const Feed: FC = () => {
       return <Preloader />;
     }
 
-    return <FeedUI orders={orders} handleGetFeeds={() => {}} />;
+    return <FeedUI orders={orders} handleGetFeeds={() => { location.reload() }} />;
 };

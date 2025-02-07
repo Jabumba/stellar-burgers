@@ -1,27 +1,27 @@
 import { ProfileUI } from '@ui-pages';
 import { FC, SyntheticEvent, useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
+import { useSelector } from '../../services/store';
+import { getUser, getAuthenticationStatus } from '../../services/slices/userSlice';
+import { TUser } from '@utils-types';
 
 export const Profile: FC = () => {
 //   TODO: взять переменную из стора
-  const user = {
-    name: '',
-    email: ''
-  };
+  const user = useSelector(getUser);
 
-  const [formValue, setFormValue] = useState({
+  const [formValue, setFormValue] = useState<TUser & { password: string }>({
     name: user.name,
     email: user.email,
     password: ''
   });
 
-//   useEffect(() => {
-//     setFormValue((prevState) => ({
-//       ...prevState,
-//       name: user?.name || '',
-//       email: user?.email || ''
-//     }));
-//   }, [user]);
+  useEffect(() => {
+    setFormValue((prevState) => ({
+      ...prevState,
+      name: user.name || '',
+      email: user.email || ''
+    }));
+  }, [user]);
 
   const isFormChanged =
     formValue.name !== user?.name ||
@@ -35,8 +35,8 @@ export const Profile: FC = () => {
   const handleCancel = (e: SyntheticEvent) => {
     e.preventDefault();
     setFormValue({
-      name: user.name,
-      email: user.email,
+      name: user?.name,
+      email: user?.email,
       password: ''
     });
   };
@@ -47,6 +47,8 @@ export const Profile: FC = () => {
       [e.target.name]: e.target.value
     }));
   };
+
+  if(useSelector(getAuth))
 
     return (
         <ProfileUI
