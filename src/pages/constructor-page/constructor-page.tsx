@@ -10,11 +10,6 @@ import { Preloader } from '../../components/ui';
 import { FC, useEffect, useLayoutEffect, useState } from 'react';
 
 export const ConstructorPage: FC = () => {
-    // const dispatch = useDispatch();
-    // useEffect(() => {
-    //     dispatch(fetchIngredients());
-    //     console.log('1')
-    // }, []);
     const isIngredientsLoading: boolean = useSelector(getLoadingStatus)
     return (
         <>

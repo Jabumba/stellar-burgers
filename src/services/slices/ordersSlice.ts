@@ -4,19 +4,11 @@ import { TConstructorIngredient, TIngredient, TOrder } from '@utils-types';
 
 export const fetchOrders = createAsyncThunk(
     'orders/getAll',
-    // async () => {
-    //     const orders = await getFeedsApi();
-    //     return orders;
-    // }
     getFeedsApi
 );
 
 export const fetchUserOrders = createAsyncThunk(
     'orders/getUserOrders',
-    // async () => {
-    //     const orders = await getFeedsApi();
-    //     return orders;
-    // }
     getOrdersApi
 );
 
@@ -37,13 +29,12 @@ export const fetchOrderById = createAsyncThunk(
 );
 
 interface IOrdersListState {
-    orders: TOrder[]
+    orders: TOrder[] | null
     userOrders: TOrder[]
     buildingOrder: {
         bun: TConstructorIngredient | null
         ingredients: TConstructorIngredient[]
     },
-    // buildingOrder: TConstructorIngredient | null,
     yourOrder: {
         order: TOrder | null
         name: string | null
@@ -81,20 +72,16 @@ const ordersSlice = createSlice({
     name: 'orders',
     initialState,
     reducers: {
+        resetOrder: (state) => {
+            state.yourOrder.order = null
+            state.buildingOrder = {
+                bun: null,
+                ingredients: []
+            }
+        },
         setCurrentOrderId: (state, action: PayloadAction<number>) => {
             state.currentOrderId = action.payload
         },
-        // setBunId: (state, action: PayloadAction<string>) => {
-        //     state.buildingOrder.bun._id = action.payload
-        // },
-        // addIngredient: (state, action: PayloadAction<TIngredient>) => {
-        //     state.buildingOrder.ingredients.push(action.payload)
-        // }
-        // addIngredient: (state, action: PayloadAction<TIngredient>) => {
-        //     action.payload.type === 'bun' 
-        //     ? state.buildingOrder.bun = action.payload 
-        //     : state.buildingOrder.ingredients.push(action.payload as TConstructorIngredient)
-        // },
         addIngredient: {
             reducer: (state, action: PayloadAction<TConstructorIngredient>) => {
                 action.payload.type === 'bun' 
@@ -166,7 +153,6 @@ const ordersSlice = createSlice({
         })
         .addCase(fetchPostOrder.rejected, (state) => {
             state.isLoadingOrder = false;
-            console.log('ошибка');
             state.isContain = false;
         })
 
@@ -180,7 +166,6 @@ const ordersSlice = createSlice({
         })
         .addCase(fetchOrderById.rejected, (state, action) => {
             state.isLoading = false;
-            console.log('ошибка');
             state.isContain = false;
         })
     },
@@ -199,6 +184,6 @@ const ordersSlice = createSlice({
     }
 });
 
-export const { setCurrentOrderId, addIngredient, deleteIngredient, changeIngredients } = ordersSlice.actions
+export const { resetOrder, setCurrentOrderId, addIngredient, deleteIngredient, changeIngredients } = ordersSlice.actions
 export const { getAllOrders, getUserOrders, getBuildingOrder, getYourOrder, getTotal, getTotalToday, getCurrentOrder, getCurrentOrderId, getContainStatus, getLoadingStatus, getLoadingOrderStatus } = ordersSlice.selectors;
 export { ordersSlice };

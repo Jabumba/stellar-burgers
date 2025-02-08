@@ -6,13 +6,8 @@ import { useSelector } from '../../services/store';
 import { getAllOrders } from '../../services/slices/ordersSlice';
 
 export const Feed: FC = () => {
-    // const dispatch = useDispatch();
-    // useEffect(() => {
-    //     dispatch(fetchOrders());
-    //     console.log('feed')
-    // }, []);
   /** TODO: взять переменную из стора */
-    const orders: TOrder[] = useSelector(getAllOrders);
+    const orders: TOrder[] = useSelector(getAllOrders) ?? [];
 
     if (!orders.length) {
       return <Preloader />;

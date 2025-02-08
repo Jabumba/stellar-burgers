@@ -1,11 +1,8 @@
-import { useState, useRef, useEffect, FC, useLayoutEffect } from 'react';
+import { useState, useRef, useEffect, FC } from 'react';
 import { useInView } from 'react-intersection-observer';
-import { useSelector, useDispatch } from '../../services/store';
+import { useSelector } from '../../services/store';
 import {
-  fetchIngredients,
-  getContainStatus,
-  getIngredients,
-  getLoadingStatus
+  getIngredients
 } from '../../services/slices/ingredientsSlice';
 
 import { TIngredient, TTabMode } from '@utils-types';

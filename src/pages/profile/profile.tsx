@@ -1,15 +1,12 @@
 import { ProfileUI } from '@ui-pages';
 import { FC, SyntheticEvent, useEffect, useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import { getUserData, getAuthenticationStatus, getPassword, fetchUser } from '../../services/slices/userSlice';
+import { getUserData, getAuthenticationStatus, getPassword, fetchUser, updateUser } from '../../services/slices/userSlice';
 import { TUser } from '@utils-types';
 import { useDispatch, useSelector } from '../../services/store';
 
 export const Profile: FC = () => {
-    // const dispatch = useDispatch()
-    // useEffect(() => {
-    //     dispatch(fetchUser());
-    // })
+    const dispatch = useDispatch()
     if(useSelector(getAuthenticationStatus) === false) {
         return (
             <Navigate
@@ -42,6 +39,7 @@ export const Profile: FC = () => {
 
     const handleSubmit = (e: SyntheticEvent) => {
         e.preventDefault();
+        dispatch(updateUser({email: formValue.email, name: formValue.name, password: formValue.password}))
     };
 
     const handleCancel = (e: SyntheticEvent) => {
@@ -60,14 +58,6 @@ export const Profile: FC = () => {
         }));
     };
 
-//   if(useSelector(getAuthenticationStatus)) {
-//     return (
-//         <Navigate
-//         to={'/'}
-//         />
-//     )
-//   }
-
     return (
         <ProfileUI
         formValue={formValue}
@@ -76,8 +66,5 @@ export const Profile: FC = () => {
         handleSubmit={handleSubmit}
         handleInputChange={handleInputChange}
         />
-        // <div>vfdcdcd</div>
     );
-
-    // return null;
 };

@@ -1,4 +1,4 @@
-import { loginUserApi, TLoginData, getUserApi, registerUserApi, TRegisterData, updateUserApi } from '@api';
+import { loginUserApi, TLoginData, getUserApi, registerUserApi, TRegisterData, updateUserApi, forgotPasswordApi } from '@api';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { TUser } from '@utils-types';
 
@@ -20,10 +20,6 @@ export const loginUser = createAsyncThunk(
 
 export const fetchUser = createAsyncThunk(
     'user/getUser',
-    // async () => {
-    //     const data = await getUserApi();
-    //     return data;
-    // }
     getUserApi
 );
 
@@ -36,18 +32,17 @@ export const updateUser = createAsyncThunk(
 );
 
 interface IUserListState {
-    // isAuthChecked: boolean, // флаг для статуса проверки токена пользователя
     isAuthenticated: boolean,
     user: TUser,
     password: string,
     loginUserError: string | undefined,
     registerUserError: string | undefined,
-    // updateUserError: string | null,
+    updateUserError: string | null,
+    forgotPasswordError: string | null,
     isLoading: boolean
 }
 
 const initialState: IUserListState = {
-    // isAuthChecked: false, // флаг для статуса проверки токена пользователя
     isAuthenticated: false,
     user: {
         email: '',
@@ -56,7 +51,8 @@ const initialState: IUserListState = {
     password: '',
     loginUserError: undefined,
     registerUserError: undefined,
-    // updateUserError: null,
+    updateUserError: null,
+    forgotPasswordError: null,
     isLoading: false
 };
 
@@ -67,68 +63,45 @@ const userSlice = createSlice({
     extraReducers: (builder) => {
         builder
         .addCase(updateUser.pending, (state) => {
-            // state.loginUserRequest = true;
-            // state.updateUserError = null;
             state.isLoading = true;
         })
         .addCase(updateUser.rejected, (state, action) => {
-            // state.loginUserRequest = false;
-            // state.updateUserError = action.payload.error;
-            // state.isAuthChecked = true;
             state.isLoading = false;
-            console.log('ошибка смены данных');
         })
         .addCase(updateUser.fulfilled, (state, action) => {
             state.user = action.payload.user;
-            // state.isAuthChecked = true;
             state.isLoading = false;
-            // state.isAuthenticated = true
-            console.log('данные изменены');
         })
 
         .addCase(fetchUser.pending, (state) => {
-            // state.loginUserRequest = true;
             state.loginUserError = undefined;
             state.isLoading = true;
         })
         .addCase(fetchUser.rejected, (state, action) => {
-            // state.loginUserRequest = false;
-            // state.loginUserError = action.payload;
-            // state.isAuthChecked = true;
             state.isLoading = false;
             state.isAuthenticated = false
-            console.log('пройдите авторизацию');
         })
         .addCase(fetchUser.fulfilled, (state, action) => {
             state.user = action.payload.user;
             state.isAuthenticated = true;
-            // state.isAuthChecked = true;
             state.isLoading = false;
             state.isAuthenticated = true
-            console.log('добро пожаловать!');
         })
 
         .addCase(loginUser.pending, (state) => {
-            // state.loginUserRequest = true;
             state.loginUserError = undefined;
             state.isLoading = true;
         })
         .addCase(loginUser.rejected, (state, action) => {
-            // state.loginUserRequest = false;
             state.loginUserError = action.error.message;
-            // state.isAuthChecked = true;
             state.isLoading = false;
             state.isAuthenticated = false
             console.log('неудачный вход');
         })
         .addCase(loginUser.fulfilled, (state, action) => {
             state.user = action.payload.user;
-            // state.loginUserRequest = false;
-            // state.isAuthenticated = true;
-            // state.isAuthChecked = true;
             state.isLoading = false;
             state.isAuthenticated = true
-            console.log('успешный вход');
         })
 
         .addCase(registerUser.pending, (state) => {
@@ -139,13 +112,11 @@ const userSlice = createSlice({
             state.registerUserError = action.error.message;
             state.isLoading = false;
             state.isAuthenticated = false
-            console.log('неудачная регистрация');
         })
         .addCase(registerUser.fulfilled, (state, action) => {
             state.user = action.payload.user;
             state.isLoading = false;
             state.isAuthenticated = true
-            console.log('успешная регистрация');
         })
     },
     selectors: {

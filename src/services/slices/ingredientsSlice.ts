@@ -2,13 +2,6 @@ import { getIngredientsApi } from '@api';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { TIngredient } from '@utils-types';
 
-// export const fetchIngredients = createAsyncThunk(
-//   'ingredients/getAll',
-//   async () => {
-//     const ingredients = await getIngredientsApi();
-//     return ingredients;
-//   }
-// );
 export const fetchIngredients = createAsyncThunk(
     'burger/getIngredients',
     getIngredientsApi
@@ -42,7 +35,6 @@ const ingredientsSlice = createSlice({
       })
       .addCase(fetchIngredients.rejected, (state, action) => {
         state.isLoading = false;
-        console.log('ошибка');
         console.log(action)
         state.isContain = false;
       })
