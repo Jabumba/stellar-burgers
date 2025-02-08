@@ -15,7 +15,7 @@ export const ConstructorPage: FC = () => {
     //     dispatch(fetchIngredients());
     //     console.log('1')
     // }, []);
-    let isIngredientsLoading: boolean = useSelector(getLoadingStatus)
+    const isIngredientsLoading: boolean = useSelector(getLoadingStatus)
     return (
         <>
         {isIngredientsLoading ? (

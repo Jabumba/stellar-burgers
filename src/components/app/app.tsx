@@ -15,9 +15,10 @@ import { BrowserRouter, Routes, Route, useNavigate, useParams, useLocation } fro
 import { AppHeader, IngredientDetails, Modal, OrderInfo } from '@components';
 import { useDispatch, useSelector } from '../../services/store';
 import { useEffect } from 'react';
-import { fetchOrders, getCurrentOrder, getCurrentOrderId } from '../../services/slices/ordersSlice';
+import { fetchOrders, fetchUserOrders, getCurrentOrder, getCurrentOrderId } from '../../services/slices/ordersSlice';
 import { TOrder } from '@utils-types';
 import { fetchIngredients, getIngredients } from '../../services/slices/ingredientsSlice';
+import { fetchUser } from '../..//services/slices/userSlice';
 
 const App = () => {
     const location = useLocation();
@@ -26,6 +27,8 @@ const App = () => {
     useEffect(() => {
         dispatch(fetchIngredients());
         dispatch(fetchOrders());
+        dispatch(fetchUserOrders());
+        dispatch(fetchUser());
     }, [])
     let currentOrderId: number = useSelector(getCurrentOrderId);
     return (

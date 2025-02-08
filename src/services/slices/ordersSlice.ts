@@ -1,4 +1,4 @@
-import { getFeedsApi, orderBurgerApi, getOrderByNumberApi } from '@api';
+import { getFeedsApi, orderBurgerApi, getOrderByNumberApi, getOrdersApi } from '@api';
 import { createSlice, createAsyncThunk, PayloadAction, nanoid } from '@reduxjs/toolkit';
 import { TConstructorIngredient, TIngredient, TOrder } from '@utils-types';
 
@@ -9,6 +9,15 @@ export const fetchOrders = createAsyncThunk(
     //     return orders;
     // }
     getFeedsApi
+);
+
+export const fetchUserOrders = createAsyncThunk(
+    'orders/getUserOrders',
+    // async () => {
+    //     const orders = await getFeedsApi();
+    //     return orders;
+    // }
+    getOrdersApi
 );
 
 export const fetchPostOrder = createAsyncThunk(
@@ -28,31 +37,33 @@ export const fetchOrderById = createAsyncThunk(
 );
 
 interface IOrdersListState {
-    orders: TOrder[];
+    orders: TOrder[]
+    userOrders: TOrder[]
     buildingOrder: {
-        bun: TIngredient |  null,
+        bun: TConstructorIngredient | null
         ingredients: TConstructorIngredient[]
     },
     // buildingOrder: TConstructorIngredient | null,
     yourOrder: {
-        order: TOrder | null,
+        order: TOrder | null
         name: string | null
     }
-    currentOrder: TOrder[] | null;
-    currentOrderId: number;
-    total: number | null;
-    totalToday: number | null;
-    isLoading: boolean;
-    isContain: boolean;
+    currentOrder: TOrder[] | null
+    currentOrderId: number
+    total: number | null
+    totalToday: number | null
+    isLoading: boolean
+    isLoadingOrder: boolean
+    isContain: boolean
 }
 
 const initialState: IOrdersListState = {
     orders: [],
+    userOrders: [],
     buildingOrder: {
         bun: null,
         ingredients: []
     },
-    // buildingOrder: null,
     yourOrder: {
         order: null,
         name: null,
@@ -62,6 +73,7 @@ const initialState: IOrdersListState = {
     total: null,
     totalToday: null,
     isLoading: false,
+    isLoadingOrder: false,
     isContain: false
 };
 
@@ -129,18 +141,31 @@ const ordersSlice = createSlice({
             state.isContain = false;
         })
 
-        .addCase(fetchPostOrder.pending, (state) => {
+        .addCase(fetchUserOrders.pending, (state) => {
             state.isLoading = true;
         })
-        .addCase(fetchPostOrder.fulfilled, (state, action) => {
+        .addCase(fetchUserOrders.fulfilled, (state, action) => {
             state.isLoading = false;
+            state.userOrders = action.payload;
+            state.isContain = true;
+        })
+        .addCase(fetchUserOrders.rejected, (state) => {
+            state.isLoading = false;
+            state.isContain = false;
+        })
+
+        .addCase(fetchPostOrder.pending, (state) => {
+            state.isLoadingOrder = true;
+        })
+        .addCase(fetchPostOrder.fulfilled, (state, action) => {
+            state.isLoadingOrder = false;
             // state.yourOrder.order = action.payload.order;
             // state.yourOrder.name = action.payload.name
             state.yourOrder = action.payload
             state.isContain = true;
         })
-        .addCase(fetchPostOrder.rejected, (state, action) => {
-            state.isLoading = false;
+        .addCase(fetchPostOrder.rejected, (state) => {
+            state.isLoadingOrder = false;
             console.log('ошибка');
             state.isContain = false;
         })
@@ -161,6 +186,7 @@ const ordersSlice = createSlice({
     },
     selectors: {
         getAllOrders: (state) => state.orders,
+        getUserOrders: (state) => state.userOrders,
         getBuildingOrder: (state) => state.buildingOrder,
         getYourOrder: (state) => state.yourOrder,
         getTotal: (state) => state.total,
@@ -168,10 +194,11 @@ const ordersSlice = createSlice({
         getCurrentOrder: (state) => state.currentOrder,
         getCurrentOrderId: (state) => state.currentOrderId,
         getContainStatus: (state) => state.isContain,
-        getLoadingStatus: (state) => state.isLoading
+        getLoadingStatus: (state) => state.isLoading,
+        getLoadingOrderStatus: (state) => state.isLoadingOrder
     }
 });
 
 export const { setCurrentOrderId, addIngredient, deleteIngredient, changeIngredients } = ordersSlice.actions
-export const { getAllOrders, getBuildingOrder, getYourOrder, getTotal, getTotalToday, getCurrentOrder, getCurrentOrderId, getContainStatus, getLoadingStatus } = ordersSlice.selectors;
+export const { getAllOrders, getUserOrders, getBuildingOrder, getYourOrder, getTotal, getTotalToday, getCurrentOrder, getCurrentOrderId, getContainStatus, getLoadingStatus, getLoadingOrderStatus } = ordersSlice.selectors;
 export { ordersSlice };
