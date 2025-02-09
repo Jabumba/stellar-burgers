@@ -1,24 +1,27 @@
-import { FC, useMemo } from 'react';
+import { FC, useEffect, useMemo } from 'react';
 import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
-import { TIngredient } from '@utils-types';
+import { TIngredient, TOrder } from '@utils-types';
+import { useDispatch, useSelector } from '../../services/store';
+import { fetchIngredients, getIngredients } from '../../services/slices/ingredientsSlice';
+import { useParams } from 'react-router-dom';
+import { fetchOrderById, getCurrentOrder, setCurrentOrderId } from '../../services/slices/ordersSlice';
 
 export const OrderInfo: FC = () => {
-  /** TODO: взять переменные orderData и ingredients из стора */
-  const orderData = {
-    createdAt: '',
-    ingredients: [],
-    _id: '',
-    status: '',
-    name: '',
-    updatedAt: 'string',
-    number: 0
-  };
-
-  const ingredients: TIngredient[] = [];
+    const dispatch = useDispatch()
+    const { id } = useParams();
+    useEffect(() => {
+        // dispatch(fetchIngredients());
+        dispatch(fetchOrderById(Number(id)));
+        dispatch(setCurrentOrderId(Number(id)))
+        // console.log('feed-modal')
+    }, []);
+    /** TODO: взять переменные orderData и ingredients из стора */
+    const orderData: TOrder | undefined = useSelector(getCurrentOrder)?.[0];
+    const ingredients: TIngredient[] = useSelector(getIngredients);
 
   /* Готовим данные для отображения */
-  const orderInfo = useMemo(() => {
+    const orderInfo = useMemo(() => {
     if (!orderData || !ingredients.length) return null;
 
     const date = new Date(orderData.createdAt);
@@ -62,6 +65,6 @@ export const OrderInfo: FC = () => {
   if (!orderInfo) {
     return <Preloader />;
   }
-
+  
   return <OrderInfoUI orderInfo={orderInfo} />;
 };
