@@ -1,7 +1,6 @@
 import { ProfileUI } from '@ui-pages';
 import { FC, SyntheticEvent, useEffect, useState } from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
-import { getUserData, getAuthenticationStatus, getPassword, fetchUser, updateUser } from '../../services/slices/userSlice';
+import { getUserData, getPassword, updateUser } from '../../services/slices/userSlice';
 import { TUser } from '@utils-types';
 import { useDispatch, useSelector } from '../../services/store';
 
