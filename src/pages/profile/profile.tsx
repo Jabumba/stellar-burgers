@@ -7,13 +7,6 @@ import { useDispatch, useSelector } from '../../services/store';
 
 export const Profile: FC = () => {
     const dispatch = useDispatch()
-    if(useSelector(getAuthenticationStatus) === false) {
-        return (
-            <Navigate
-            to={'/login'}
-            />
-        )
-    }
     // TODO: взять переменную из стора
     const user = useSelector(getUserData);
     const password = useSelector(getPassword);
@@ -28,9 +21,10 @@ export const Profile: FC = () => {
         setFormValue((prevState) => ({
             ...prevState,
             name: user.name || '',
-            email: user.email || ''
+            email: user.email || '',
+            password: password
         }));
-    }, [user]);
+    }, [user, password]);
 
     const isFormChanged =
         formValue.name !== user?.name ||
@@ -47,7 +41,7 @@ export const Profile: FC = () => {
         setFormValue({
             name: user?.name,
             email: user?.email,
-            password: ''
+            password: password
         });
     };
 

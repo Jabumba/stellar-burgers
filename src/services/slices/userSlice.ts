@@ -1,6 +1,12 @@
-import { loginUserApi, TLoginData, getUserApi, registerUserApi, TRegisterData, updateUserApi, forgotPasswordApi } from '@api';
+import { loginUserApi, TLoginData, getUserApi, registerUserApi, TRegisterData, updateUserApi, logoutApi } from '@api';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { TUser } from '@utils-types';
+import { TUser } from '../../utils/types';
+import { deleteCookie, setCookie } from '../../utils/cookie';
+
+export const logoutUser = createAsyncThunk(
+    'user/logoutUser',
+    logoutApi
+);
 
 export const registerUser = createAsyncThunk(
     'user/registerUser',
@@ -62,22 +68,41 @@ const userSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
+
+        .addCase(logoutUser.pending, () => {
+        })
+        .addCase(logoutUser.rejected, () => {
+            console.log('ошибка выхода');
+        })
+        .addCase(logoutUser.fulfilled, (state) => {
+            deleteCookie('accessToken');
+            localStorage.removeItem('refreshToken');
+            console.log('успешный выход');
+            state.user = {
+                email: '',
+                name: ''
+            }
+            state.isAuthenticated = false;
+        })
+
         .addCase(updateUser.pending, (state) => {
             state.isLoading = true;
         })
-        .addCase(updateUser.rejected, (state, action) => {
+        .addCase(updateUser.rejected, (state) => {
             state.isLoading = false;
         })
         .addCase(updateUser.fulfilled, (state, action) => {
             state.user = action.payload.user;
             state.isLoading = false;
+            localStorage.setItem('email', action.payload.user.email);
+            localStorage.setItem('name', action.payload.user.name);
         })
 
         .addCase(fetchUser.pending, (state) => {
             state.loginUserError = undefined;
             state.isLoading = true;
         })
-        .addCase(fetchUser.rejected, (state, action) => {
+        .addCase(fetchUser.rejected, (state) => {
             state.isLoading = false;
             state.isAuthenticated = false
         })
@@ -85,7 +110,8 @@ const userSlice = createSlice({
             state.user = action.payload.user;
             state.isAuthenticated = true;
             state.isLoading = false;
-            state.isAuthenticated = true
+            localStorage.setItem('email', action.payload.user.email);
+            localStorage.setItem('name', action.payload.user.name);
         })
 
         .addCase(loginUser.pending, (state) => {
@@ -102,6 +128,8 @@ const userSlice = createSlice({
             state.user = action.payload.user;
             state.isLoading = false;
             state.isAuthenticated = true
+            setCookie('accessToken', action.payload.accessToken);
+            localStorage.setItem('refreshToken', action.payload.refreshToken);
         })
 
         .addCase(registerUser.pending, (state) => {

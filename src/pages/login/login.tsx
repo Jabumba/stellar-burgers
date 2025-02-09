@@ -5,18 +5,20 @@ import { getAuthenticationStatus, getLoginError, loginUser } from '../../service
 import { useNavigate } from 'react-router-dom';
 
 export const Login: FC = () => {
+    console.log(history)
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
+    const isAuthenticated = useSelector(getAuthenticationStatus);
 
     const handleSubmit = (e: SyntheticEvent) => {
         e.preventDefault();
         dispatch(loginUser({email, password}))
     };
-    const error = useSelector(getLoginError) ?? ''
-    if(useSelector(getAuthenticationStatus) === true) {
-        navigate(-1)
+    const error = useSelector(getLoginError) ?? '';
+    if(isAuthenticated === true) {
+        history.go(-1);
     }
     return (
         <LoginUI

@@ -7,11 +7,11 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { getUserOrders } from '../../services/slices/ordersSlice';
 
 export const ProfileOrders: FC = () => {
-    const navigate = useNavigate()
-    if(useSelector(getAuthenticationStatus) === false) {
-        navigate('/login', { replace: false })
-        return;
-    }
+    // const navigate = useNavigate()
+    // if(useSelector(getAuthenticationStatus) === false) {
+    //     navigate('/login', { replace: false })
+    //     return;
+    // }
     /** TODO: взять переменную из стора */
     const orders: TOrder[] = useSelector(getUserOrders);
     

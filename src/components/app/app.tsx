@@ -19,6 +19,7 @@ import { fetchOrders, fetchUserOrders, getCurrentOrder, getCurrentOrderId } from
 import { TOrder } from '@utils-types';
 import { fetchIngredients, getIngredients } from '../../services/slices/ingredientsSlice';
 import { fetchUser } from '../..//services/slices/userSlice';
+import { ProtectedRoute } from '../protected-route/protected-route';
 
 const App = () => {
     const location = useLocation();
@@ -44,8 +45,8 @@ const App = () => {
                     <Route path='forgot-password' element={<ForgotPassword />} />
                     <Route path='reset-password' element={<ResetPassword />} />
                     <Route path='profile'>
-                        <Route index element={<Profile />} />
-                        <Route path='orders' element={<ProfileOrders />} />
+                        <Route index element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                        <Route path='orders' element={<ProtectedRoute><ProfileOrders /></ProtectedRoute>} />
                     </Route>
 
                     <Route 
