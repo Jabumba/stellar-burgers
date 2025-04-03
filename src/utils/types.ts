@@ -12,6 +12,11 @@ export type TIngredient = {
   image_mobile: string;
 };
 
+export type TTask = {
+    id: string;
+    content: string;
+};
+
 export type TConstructorIngredient = TIngredient & {
   id: string;
 };

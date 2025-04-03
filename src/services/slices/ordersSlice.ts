@@ -1,4 +1,4 @@
-import { getFeedsApi, orderBurgerApi, getOrderByNumberApi, getOrdersApi } from '@api';
+import { getFeedsApi, orderBurgerApi, getOrderByNumberApi, getOrdersApi } from '../../utils/burger-api';
 import { createSlice, createAsyncThunk, PayloadAction, nanoid } from '@reduxjs/toolkit';
 import { TConstructorIngredient, TIngredient, TOrder } from '@utils-types';
 
@@ -28,7 +28,7 @@ export const fetchOrderById = createAsyncThunk(
     }
 );
 
-interface IOrdersListState {
+export interface IOrdersListState {
     orders: TOrder[] | null
     userOrders: TOrder[]
     buildingOrder: {
@@ -48,7 +48,7 @@ interface IOrdersListState {
     isContain: boolean
 }
 
-const initialState: IOrdersListState = {
+export const initialState: IOrdersListState = {
     orders: [],
     userOrders: [],
     buildingOrder: {
@@ -146,9 +146,9 @@ const ordersSlice = createSlice({
         })
         .addCase(fetchPostOrder.fulfilled, (state, action) => {
             state.isLoadingOrder = false;
-            // state.yourOrder.order = action.payload.order;
-            // state.yourOrder.name = action.payload.name
-            state.yourOrder = action.payload
+            state.yourOrder.order = action.payload.order;
+            state.yourOrder.name = action.payload.name
+            // state.yourOrder = action.payload
             state.isContain = true;
         })
         .addCase(fetchPostOrder.rejected, (state) => {

@@ -1,4 +1,4 @@
-import { loginUserApi, TLoginData, getUserApi, registerUserApi, TRegisterData, updateUserApi, logoutApi } from '@api';
+import { loginUserApi, TLoginData, getUserApi, registerUserApi, TRegisterData, updateUserApi, logoutApi } from '../../utils/burger-api';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { TUser } from '../../utils/types';
 import { deleteCookie, setCookie } from '../../utils/cookie';
@@ -37,18 +37,18 @@ export const updateUser = createAsyncThunk(
     }
 );
 
-interface IUserListState {
+export interface IUserListState {
     isAuthenticated: boolean,
     user: TUser,
     password: string,
-    loginUserError: string | undefined,
-    registerUserError: string | undefined,
+    loginUserError: string | undefined | Error,
+    registerUserError: string | undefined | Error,
     updateUserError: string | null,
     forgotPasswordError: string | null,
     isLoading: boolean
 }
 
-const initialState: IUserListState = {
+export const initialState: IUserListState = {
     isAuthenticated: false,
     user: {
         email: '',
@@ -69,7 +69,8 @@ const userSlice = createSlice({
     extraReducers: (builder) => {
         builder
 
-        .addCase(logoutUser.pending, () => {
+        .addCase(logoutUser.pending, (state) => {
+            state.isLoading = true;
         })
         .addCase(logoutUser.rejected, () => {
             console.log('ошибка выхода');
@@ -93,6 +94,7 @@ const userSlice = createSlice({
         })
         .addCase(updateUser.fulfilled, (state, action) => {
             state.user = action.payload.user;
+            state.isAuthenticated = true;
             state.isLoading = false;
             localStorage.setItem('email', action.payload.user.email);
             localStorage.setItem('name', action.payload.user.name);

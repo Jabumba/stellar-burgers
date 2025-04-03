@@ -1,4 +1,4 @@
-import { getIngredientsApi } from '@api';
+import { getIngredientsApi } from '../../utils/burger-api';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { TIngredient } from '@utils-types';
 
@@ -7,13 +7,13 @@ export const fetchIngredients = createAsyncThunk(
     getIngredientsApi
 );
 
-interface IngredientsListState {
+export interface IngredientsListState {
   ingredients: TIngredient[];
   isLoading: boolean;
   isContain: boolean;
 }
 
-const initialState: IngredientsListState = {
+export const initialState: IngredientsListState = {
   ingredients: [],
   isLoading: false,
   isContain: false
@@ -27,6 +27,7 @@ const ingredientsSlice = createSlice({
     builder
       .addCase(fetchIngredients.pending, (state) => {
         state.isLoading = true;
+        console.log('loading');
       })
       .addCase(fetchIngredients.fulfilled, (state, action) => {
         state.isLoading = false;
@@ -35,8 +36,8 @@ const ingredientsSlice = createSlice({
       })
       .addCase(fetchIngredients.rejected, (state, action) => {
         state.isLoading = false;
-        console.log(action)
         state.isContain = false;
+        console.log('error')
       })
   },
   selectors: {
@@ -46,6 +47,7 @@ const ingredientsSlice = createSlice({
   }
 });
 
+const ingredientsSliceReducer = ingredientsSlice.reducer
 export const { getIngredients, getContainStatus, getLoadingStatus } =
   ingredientsSlice.selectors;
-export { ingredientsSlice };
+export { ingredientsSlice, ingredientsSliceReducer };
